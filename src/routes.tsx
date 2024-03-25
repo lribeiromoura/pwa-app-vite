@@ -4,9 +4,12 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-const File1 = lazy(() => import('./app/forms/firstform'));
-const File2 = lazy(() => import('./app/forms/secondform'));
-const File3 = lazy(() => import('./app/index'));
+const File1 = lazy(() => import('./app/context/Network'));
+const File2 = lazy(() => import('./app/forms/firstform'));
+const File3 = lazy(() => import('./app/forms/secondform'));
+const File4 = lazy(() => import('./app/hooks/useSync'));
+const File5 = lazy(() => import('./app/index'));
+const File6 = lazy(() => import('./app/utils/indexedDB'));
 
 const RootLayout = lazy(() => import('./app/layout'));
 
@@ -35,6 +38,16 @@ export function AppRoutes({ custom404: Custom404, customLoading: CustomLoading }
                 <File1 />
               </RootLayout>
             } 
+            path="/context/Network" 
+            key="/context/Network"  
+          />
+        
+          <Route 
+            element={
+              <RootLayout>
+                <File2 />
+              </RootLayout>
+            } 
             path="/forms/firstform" 
             key="/forms/firstform"  
           />
@@ -42,7 +55,7 @@ export function AppRoutes({ custom404: Custom404, customLoading: CustomLoading }
           <Route 
             element={
               <RootLayout>
-                <File2 />
+                <File3 />
               </RootLayout>
             } 
             path="/forms/secondform" 
@@ -52,11 +65,31 @@ export function AppRoutes({ custom404: Custom404, customLoading: CustomLoading }
           <Route 
             element={
               <RootLayout>
-                <File3 />
+                <File4 />
+              </RootLayout>
+            } 
+            path="/hooks/useSync" 
+            key="/hooks/useSync"  
+          />
+        
+          <Route 
+            element={
+              <RootLayout>
+                <File5 />
               </RootLayout>
             } 
             path="/" 
             key="/"  
+          />
+        
+          <Route 
+            element={
+              <RootLayout>
+                <File6 />
+              </RootLayout>
+            } 
+            path="/utils/indexedDB" 
+            key="/utils/indexedDB"  
           />
           <Route
             path="*"

@@ -13,7 +13,10 @@ export default function SecondForm() {
         <h1 className="text-4xl font-bold mb-4">Second Form</h1>
       </div>
       <Formik
-        initialValues={{ name: "", age: "" }}
+        initialValues={{
+          email: "",
+          password: "",
+        }}
         validationSchema={Yup.object({
           email: Yup.string()
             .email("Invalid email address")
