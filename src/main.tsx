@@ -4,6 +4,8 @@ import "./index.css";
 import { registerSW } from "virtual:pwa-register";
 import { AppRoutes } from "./routes";
 import { NetworkProvider } from "./app/context/Network";
+import "react-toastify/dist/ReactToastify.css";
+import "react-toastify/dist/ReactToastify.min.css";
 
 const updateSW = registerSW({
   onNeedRefresh() {

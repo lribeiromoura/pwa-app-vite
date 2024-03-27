@@ -1,10 +1,36 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { useNetworkCheck } from "../../context/Network";
+import { createLocalDB } from "../../utils/PouchDb";
+import { forms } from "../../utils/formNames";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function SecondForm() {
-  const handleSubmit = (values: any) => {
-    console.log(values);
+  const { isOnline } = useNetworkCheck();
+
+  const handleSubmit = async (values: any) => {
+    try {
+      if (isOnline) {
+        const apiUrl = forms.secondForm.url;
+        const postResponse = await fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        });
+        toast("Data sent to API");
+        console.log("Data sent to API:", await postResponse.json());
+        return;
+      }
+      const db = createLocalDB(forms.secondForm.name);
+      const response = await db.post(values);
+      toast("Data saved locally");
+      console.log("Data saved locally:", response);
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
   };
 
   return (
@@ -23,8 +49,9 @@ export default function SecondForm() {
             .required("Email is required"),
           password: Yup.string().required("Password is required"),
         })}
-        onSubmit={(values) => {
+        onSubmit={(values, { resetForm }) => {
           handleSubmit(values);
+          resetForm();
         }}
       >
         <Form className="flex flex-col">
@@ -73,6 +100,7 @@ export default function SecondForm() {
           Back
         </button>
       </a>
+      <ToastContainer />
     </div>
   );
 }
