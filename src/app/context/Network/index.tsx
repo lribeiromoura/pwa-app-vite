@@ -24,19 +24,31 @@ export const NetworkProvider = ({ children }: childrenType) => {
   const setOnlineToTrue = useCallback((): void => {
     setOnline(true);
   }, []);
+
   const setOnlineToFalse = useCallback((): void => {
     setOnline(false);
   }, []);
 
-  useEffect(() => {
-    window.addEventListener("online", setOnlineToTrue);
-    window.addEventListener("offline", setOnlineToFalse);
+  const checkOnlineStatus = useCallback(async (): Promise<boolean> => {
+    try {
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/posts"
+      );
+      return response.ok;
+    } catch (error) {
+      return false;
+    }
+  }, []);
 
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const result = await checkOnlineStatus();
+      result ? setOnlineToTrue() : setOnlineToFalse();
+    }, 3000);
     return () => {
-      window.removeEventListener("online", setOnlineToTrue);
-      window.removeEventListener("offline", setOnlineToFalse);
+      clearInterval(interval);
     };
-  }, [setOnlineToTrue, setOnlineToFalse]);
+  }, [checkOnlineStatus, setOnlineToFalse, setOnlineToTrue]);
 
   return (
     <NetworkContext.Provider value={{ isOnline }}>

@@ -1,35 +1,38 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-// import { createTransaction } from "../../utils/indexedDB";
-// import { useNetworkCheck } from "../../context/Network";
+import { createLocalDB } from "../../utils/PouchDb";
+import { toast } from "react-toastify";
+import { forms } from "../../utils/formNames";
+import { useNetworkCheck } from "../../context/Network";
 
 export default function FirstForm() {
-  // const { isOnline } = useNetworkCheck();
+  const { isOnline } = useNetworkCheck();
 
-  // const handleSubmit = async (values: any) => {
-  //   try {
-  //     if (!isOnline) {
-  //       createTransaction("firstForm", values);
-  //       return;
-  //     }
-  //     const response = await fetch("http://localhost:3001/firstform", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(values),
-  //     });
+  const handleSubmit = async (values: any) => {
+    try {
+      if (isOnline) {
+        const apiUrl = forms.firstForm.url;
+        const postResponse = await fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        });
+        toast("Data sent to API");
+        console.log("Data sent to API:", await postResponse.json());
+        return;
+      }
+      const db = createLocalDB(forms.firstForm.name);
+      const response = await db.post(values);
+      toast("Data saved locally");
+      console.log("Data saved locally:", response);
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
 
-  //     if (response.ok) {
-  //       console.log("Form added successfully");
-  //     } else {
-  //       console.error("Error adding form");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error adding form", error);
-  //   }
-  // };
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <div>
@@ -44,8 +47,8 @@ export default function FirstForm() {
             .positive("Age must be positive")
             .integer("Age must be an integer"),
         })}
-        onSubmit={() => {
-          // handleSubmit(values);
+        onSubmit={(values) => {
+          handleSubmit(values);
         }}
       >
         <Form className="flex flex-col">

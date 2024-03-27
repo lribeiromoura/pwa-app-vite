@@ -1,6 +1,13 @@
-export default function Form1() {
+import SyncNav from "./components/SyncNav";
+import { useNetworkCheck } from "./context/Network";
+import { useSync } from "./hooks/useSync";
+
+export default function Home() {
+  const { isOnline } = useNetworkCheck();
+  const { handleSyncData } = useSync();
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
+      <SyncNav isOnline={isOnline} handleSyncData={() => handleSyncData()} />
       <div>
         <h1 className="text-4xl font-bold mb-4">PWA Offline Example</h1>
         <p className="text-lg">PWA Offline Example with VITE + React.</p>
